@@ -2,6 +2,7 @@ import logging
 import numpy as np
 import pandas as pd
 import wfdb
+import wfdb.processing
 
 from enum import Enum
 
@@ -115,6 +116,34 @@ class ECG():
         """
         self._check_lead(lead)
         return self.annotations[lead].contained_labels
+
+
+    def get_mean_hr(self, lead :'ECG.Lead') -> int:
+        """
+        This function computes the mean heart rate of the given lead,
+        in particular it returns the average duration of a beat measured in number of samples.
+
+        Parameters
+        ----------
+        lead : ECG.Lead
+            The lead of ECG considered.
+
+        Returns
+        -------
+        : int
+            Mean heart beat in number of samples.
+
+        Raises
+        ------
+        : ValueError
+            If the given lead is not known for this ECG.
+        """
+        self._check_lead(lead)
+        hr = wfdb.processing.calc_mean_hr(
+            wfdb.processing.ann2rr(self.filepath + self.filename, lead.value, as_array=True),
+            fs=self.fs
+        )
+        return int(round(hr, 0))
 
 
     def get_p_signal(self, lead :'ECG.Lead') -> np.ndarray:
