@@ -56,7 +56,7 @@ class ECG():
 
         try:
             self.signals = wfdb.rdrecord(filepath + filename)
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             logger.error(f"Data file '{filepath + filename}' not found")
             raise FileNotFoundError(f"Data file '{filepath + filename}' not found") from None
 
@@ -64,7 +64,7 @@ class ECG():
             try:
                 self.annotations[lead] = wfdb.rdann(filepath + filename, lead.value, return_label_elements=["symbol", "label_store"], summarize_labels=True)
                 self.leads.append(lead)
-            except FileNotFoundError as e:
+            except FileNotFoundError:
                 logger.warning(f"Annotation file '{filepath + filename}.{lead.value}' not found")
 
         self.fs = self.signals.fs
@@ -270,6 +270,10 @@ class ECG():
 
         ann = self.get_annotation(lead)
         ann_desc = self.get_annotation_desc(lead)
+
+        if (symbol_1 not in ann_desc["symbol"].values) or (symbol_2 not in ann_desc["symbol"].values) or (symbol_3 not in ann_desc["symbol"].values):
+            logger.error(f"Symbols '{symbol_1}', '{symbol_2}' and '{symbol_3}' not found in ecg '{self.filename}.{lead.value}'")
+            raise FileNotFoundError(f"Symbols '{symbol_1}', '{symbol_2}' and '{symbol_3}' not found in ecg '{self.filename}.{lead.value}'") from None
 
         sym1_id = ann_desc[ann_desc["symbol"] == symbol_1]["label_store"].iloc[0]
         sym2_id = ann_desc[ann_desc["symbol"] == symbol_2]["label_store"].iloc[0]
