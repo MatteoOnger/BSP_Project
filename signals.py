@@ -157,7 +157,7 @@ class ECG():
 
         Returns
         -------
-        : np.ndarray
+        : np.ndarray of shape \(N)
             P-signal of the given lead.
 
         Raises
@@ -211,9 +211,9 @@ class ECG():
 
         Returns
         -------
-        : np.ndarray of shape \(N, 3)
+        : np.ndarray of shape \(W, 3)
             Indices of the samples corresponding to the start, peak and end points
-            of the ``N`` T-waves present in the signal.
+            of the ``W`` T-waves present in the signal.
 
         Raises
         ------
